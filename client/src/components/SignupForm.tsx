@@ -52,6 +52,11 @@ const SignupForm = ({ onSignup }: SignupFormProps) => {
               {error}
             </div>
           )}
+          {loading && (
+            <div className="p-3 text-sm text-gray-400 bg-red-50 rounded-lg border border-red-100">
+             loading <Loader2 size={20} className="animate-spin"/>
+            </div>
+          )}
           <div className="space-y-1">
             <Label htmlFor="name">Full Name</Label>
             <div className="relative">

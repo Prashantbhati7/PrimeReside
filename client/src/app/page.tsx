@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="h-full">
       <Navbar />
-      <main className={`h-full flex w-full bg-black  flex-col`}>
+      <main className={`h-full flex w-full  flex-col`}>
         <Landing />
       </main>
     </div>

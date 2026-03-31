@@ -25,12 +25,13 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
     try {
       await onLogin({ email, password });
     } catch (err: any) {
+      console.log("error is ",err);
       setError(err?.data?.message || "Invalid email or password");
     } finally {
       setLoading(false);
     }
   };
-
+   
   return (
     <Card className="w-full max-w-md shadow-2xl border-none bg-white/80 backdrop-blur-md">
       <CardHeader className="space-y-1 text-center">
@@ -44,6 +45,11 @@ const LoginForm = ({ onLogin }: LoginFormProps) => {
           {error && (
             <div className="p-3 text-sm text-red-500 bg-red-50 rounded-lg border border-red-100">
               {error}
+            </div>
+          )}
+          {loading && (
+            <div className="p-3 text-sm flex text-gray-400 bg-red-50 rounded-lg border border-red-100">
+              please wait Loading <Loader2 className="animate-spin" size={32}></Loader2> 
             </div>
           )}
           <div className="space-y-2">

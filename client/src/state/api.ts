@@ -30,6 +30,7 @@ export const api = createApi({
     "Leases",
     "Payments",
     "Applications",
+    "Auth",
   ],
   endpoints: (build) => ({
     getAuthUser: build.query<any, void>({
@@ -73,6 +74,7 @@ export const api = createApi({
           return { error: error.message || "Could not fetch user data" };
         }
       },
+      providesTags: ["Auth"],
     }),
 
     login: build.mutation<any, any>({
@@ -81,6 +83,7 @@ export const api = createApi({
         method: "POST",
         body: credentials,
       }),
+      invalidatesTags: ["Auth"],
     }),
 
     signup: build.mutation<any, any>({
@@ -89,8 +92,17 @@ export const api = createApi({
         method: "POST",
         body: credentials,
       }),
+      invalidatesTags: ["Auth"],
     }),
 
+    logout: build.mutation<void, void>({
+      query: () => ({
+        url: "/auth/logout",
+        method: "GET",
+      }),
+      invalidatesTags: ["Auth"],
+    }),
+    
     // property related endpoints
     getProperties: build.query<Property[],Partial<FiltersState> & { favoriteIds?: number[] }>({
       query: (filters) => {
@@ -393,4 +405,5 @@ export const {
   useCreateApplicationMutation,
   useLoginMutation,
   useSignupMutation,
+  useLogoutMutation,
 } = api;

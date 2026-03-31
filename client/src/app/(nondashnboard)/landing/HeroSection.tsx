@@ -59,7 +59,7 @@ const HeroSection = () => {
         src="/realEstate.jpg"
         alt="PrimeReside Rental Platform Hero Section"
         fill
-        className="object-cover object-center"
+        className="object-cover z-0 absolute top-0 object-center"
         loading='lazy'
         fetchPriority="low"
       />

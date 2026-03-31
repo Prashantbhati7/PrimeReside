@@ -24,13 +24,15 @@ const Listings = () => {
   const [removeFavorite] = useRemoveFavoritePropertyMutation();
   const viewMode = useAppSelector((state) => state.global.viewMode);
   const filters = useAppSelector((state) => state.global.filters);
-
+ const response = useGetPropertiesQuery(filters);
+  console.log("response is ",response);
   const {
     data: properties,
     isLoading,
     isError,
   } = useGetPropertiesQuery(filters);
-
+  console.log("properties is ",properties);
+  console.log("tenant is ",tenant);
   const handleFavoriteToggle = async (propertyId: number) => {
     if (!authUser) return;
 

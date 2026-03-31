@@ -148,7 +148,8 @@ export const getProperties = async (req: Request, res: Response) => {
       ${whereClause}
     `;
     const properties = await sql.query(queryText, params);
-    console.log(properties);
+    console.log("Properties sent are ", properties);
+
     return res.status(200).json({"message":"properties fetched successfully",properties})
 };
 

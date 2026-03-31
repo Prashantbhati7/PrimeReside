@@ -55,27 +55,30 @@ export const register = AsyncHandler(async (req: Request, res: Response) => {
         sameSite:"lax",
         maxAge:60*60*24*7*1000
     }
-    return res.status(201).cookie("token",token,option).json({ message: "User registered successfully", user: registeredUser });
+    return res.status(201).cookie("token",token,option).json({ message: "User registered successfully", user: registeredUser,token });
 })
 
 
 export const login = AsyncHandler(async (req: Request, res: Response) => {
+    console.log("login route is working ");
     const { email, password } = req.body;
     if (!email?.trim() || !password?.trim()) {
         throw new ApiError(400, "All fields are required");
     }
-
+    console.log("email and password is ",email,password);
     let user: any = null;
     let userRole: string = '';
     
     // Check Tenant table first
     const tenants = await sql`SELECT * FROM "Tenant" WHERE email = ${email}`;
+    console.log("tenants is ",tenants);
     if (tenants.length > 0) {
         user = tenants[0];
         userRole = 'tenant';
     } else {
         // Check Manager table
         const managers = await sql`SELECT * FROM "Manager" WHERE email = ${email}`;
+        console.log("managers is ",managers);
         if (managers.length > 0) {
             user = managers[0];
             userRole = 'manager';
@@ -83,6 +86,7 @@ export const login = AsyncHandler(async (req: Request, res: Response) => {
     }
 
     if (!user) {
+        console.log("user is not found ");
         throw new ApiError(404, "User not found");
     }
 
@@ -104,7 +108,8 @@ export const login = AsyncHandler(async (req: Request, res: Response) => {
     }
     return res.status(200).cookie("token",token,option).json({ 
         message: "User logged in successfully", 
-        user: { ...user, role: userRole } 
+        user: { ...user, role: userRole } ,
+        token:token
     });
 })
 
