@@ -147,8 +147,13 @@ export const getProperties = async (req: Request, res: Response) => {
       JOIN "Location" l ON p."locationId" = l.id
       ${whereClause}
     `;
-    const properties = await sql.query(queryText, params);
-    console.log("Properties sent are ", properties);
+    const propertiesResult = await sql.query(queryText, params);
+    
+    const properties = propertiesResult.map((p: any) => ({
+      ...p,
+      amenities: Array.isArray(p.amenities) ? p.amenities : (typeof p.amenities === "string" ? p.amenities.replace(/[{}]/g, "").split(",") : []),
+      highlights: Array.isArray(p.highlights) ? p.highlights : (typeof p.highlights === "string" ? p.highlights.replace(/[{}]/g, "").split(",") : []),
+    }));
 
     return res.status(200).json({"message":"properties fetched successfully",properties})
 };
@@ -176,11 +181,19 @@ export const getPropertyById = AsyncHandler(async (req: Request, res: Response) 
       WHERE p.id = $1
     `;
 
-    const property = await sql.query(queryText, [Number(id)]);
+    const propertyResult = await sql.query(queryText, [Number(id)]);
 
-    if (!property || property.length === 0) {
+    if (!propertyResult || propertyResult.length === 0) {
         throw new ApiError(404, "Property not found");
     }
+
+    const property = [
+      {
+        ...propertyResult[0],
+        amenities: Array.isArray(propertyResult[0].amenities) ? propertyResult[0].amenities : (typeof propertyResult[0].amenities === "string" ? propertyResult[0].amenities.replace(/[{}]/g, "").split(",") : []),
+        highlights: Array.isArray(propertyResult[0].highlights) ? propertyResult[0].highlights : (typeof propertyResult[0].highlights === "string" ? propertyResult[0].highlights.replace(/[{}]/g, "").split(",") : []),
+      }
+    ];
 
     return res.status(200).json({"message":"property fetched successfully",property});
 });
@@ -196,7 +209,8 @@ export const createProperty = AsyncHandler(async (req: Request, res: Response) =
       managerAuthId,
       ...propertyData
     } = req.body;
-
+   console.log("req body is ",req.body);
+   console.log("files is ",files);
     // 🟢 Upload photos
     const photoUrls = await Promise.all(
       files.map(async (file) => {
@@ -216,29 +230,27 @@ export const createProperty = AsyncHandler(async (req: Request, res: Response) =
     );
 
     // 🟢 Geocode address
-    const geocodingUrl = `https://nominatim.openstreetmap.org/search?${new URLSearchParams(
-      {
-        street: address,
-        city,
-        country,
-        postalcode: postalCode,
-        format: "json",
-        limit: "1",
-      }
-    ).toString()}`;
-    const geocodingResponse = await axios.get(geocodingUrl, {
-      headers: {
-        "User-Agent": "RealEstateApp (justsomedummyemail@gmail.com)",
-      },
-    });
-    console.log("on creating property, geocoding res for address", address, geocodingResponse.data);
-    const [longitude, latitude] =
-      geocodingResponse.data[0]?.lon && geocodingResponse.data[0]?.lat
-        ? [
-            parseFloat(geocodingResponse.data[0]?.lon),
-            parseFloat(geocodingResponse.data[0]?.lat),
-          ]
-        : [0, 0];
+    const fullAddress = `${address}, ${city}, ${postalCode}, India`;
+
+    const geocodingUrl = `https://us1.locationiq.com/v1/search.php?${new URLSearchParams({
+      key: process.env.LOCATIONIQ_API_KEY!,
+      q: fullAddress,
+      format: "json",
+      limit: "1",
+    }).toString()}`;
+
+    const response = await axios.get(geocodingUrl);
+    console.log("response from locationiq is ",response);
+    if (!response.data || response.data.length === 0) {
+      throw new ApiError(400, "Invalid address. Could not find coordinates.");
+    }
+
+    const { lat, lon } = response.data[0];
+
+    const latitude = parseFloat(lat);
+    const longitude = parseFloat(lon);
+
+    console.log("Geocoding result:", { latitude, longitude });
 
     // 🟢 Create Location securely
     const insertLocationQuery = `
@@ -291,7 +303,13 @@ export const createProperty = AsyncHandler(async (req: Request, res: Response) =
     
     return res.status(201).json({
       ...propertyResult[0],
-      location: locationResult[0]
+      location: {
+        ...locationResult[0],
+        coordinates: {
+          longitude,
+          latitude
+        }
+      }
     });
 });
 

@@ -27,7 +27,7 @@ import applicationRouter from './routes/application.route.js';
 app.use('/api/v1/auth',authRouter);
 app.use('/api/v1/properties',propertiesRouter);
 app.use('/api/v1/tenants',tenantRouter);
-app.use('/api/v1/manager',managerRouter);
+app.use('/api/v1/managers',managerRouter);
 app.use('/api/v1/leases',leaseRouter);
 app.use('/api/v1/applications',applicationRouter);
 app.use((err:ApiError,req:express.Request,res:express.Response,next:express.NextFunction)=>{

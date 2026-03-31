@@ -15,7 +15,7 @@ import {
   useGetPaymentsQuery,
   useGetPropertyQuery,
 } from "@/state/api";
-import { Lease, Payment, Property } from "@/types/prismaTypes";
+import { Lease, Payment, Property } from '@/types'
 import {
   ArrowDownToLineIcon,
   Check,
@@ -234,7 +234,7 @@ const Residence = () => {
     isLoading: propertyLoading,
     error: propertyError,
   } = useGetPropertyQuery(Number(id));
-
+  console.log("property recieved is ",property);
   const { data: leases, isLoading: leasesLoading } = useGetLeasesQuery(
     parseInt(authUser?.userId || "0"),
     { skip: !authUser?.userId }

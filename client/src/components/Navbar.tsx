@@ -51,9 +51,9 @@ const Navbar = () => {
             )}
             <Link href="/" className="cursor-pointer" scroll={false}>
               <div className="flex items-center gap-3">
-                <Building2Icon size={28} className=" -mr-2" />
+                <Building2Icon size={28} className="text-black  -mr-2" />
                 <div className="text-xl font-bold">
-                  <span className="hover:text-black">PRIME</span>
+                  <span className= "text-orange-300 hover:text-blue-400">PRIME</span>
                   <span className="text-transparent bg-clip-text bg-linear-to-r font-light hover:text-pink-600 from-red-500 to-pink-400">
                     RESIDE
                   </span>

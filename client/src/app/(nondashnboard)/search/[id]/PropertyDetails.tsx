@@ -2,8 +2,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AmenityIcons, HighlightIcons } from "@/lib/constants";
 import { formatEnumString } from "@/lib/utils";
 import { useGetPropertyQuery } from "@/state/api";
+import { AmenityEnum, HighlightEnum } from "@/types";
 import { HelpCircle } from "lucide-react";
 import React from "react";
+
+interface PropertyDetailsProps {
+  propertyId: number;
+}
 
 const PropertyDetails = ({ propertyId }: PropertyDetailsProps) => {
   const {
@@ -23,7 +28,7 @@ const PropertyDetails = ({ propertyId }: PropertyDetailsProps) => {
       <div>
         <h2 className="text-xl font-semibold my-3">Property Amenities</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {property.amenities.map((amenity: AmenityEnum) => {
+          {(property.amenities || []).map((amenity: AmenityEnum) => {
             const Icon = AmenityIcons[amenity as AmenityEnum] || HelpCircle;
             return (
               <div
@@ -46,7 +51,7 @@ const PropertyDetails = ({ propertyId }: PropertyDetailsProps) => {
           Highlights
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-4 w-full">
-          {property.highlights.map((highlight: HighlightEnum) => {
+          {(property.highlights || []).map((highlight: HighlightEnum) => {
             const Icon =
               HighlightIcons[highlight as HighlightEnum] || HelpCircle;
             return (

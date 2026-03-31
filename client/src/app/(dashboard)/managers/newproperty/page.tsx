@@ -7,13 +7,14 @@ import { PropertyFormData, propertySchema } from "@/lib/schemas";
 import { useCreatePropertyMutation, useGetAuthUserQuery } from "@/state/api";
 import { AmenityEnum, HighlightEnum, PropertyTypeEnum } from "@/lib/constants";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 
 const NewProperty = () => {
   const [createProperty] = useCreatePropertyMutation();
   const { data: authUser } = useGetAuthUserQuery();
+  const [loading,setloading] = useState(false);
 
   const form = useForm<PropertyFormData>({
     resolver: zodResolver(propertySchema),
@@ -40,16 +41,18 @@ const NewProperty = () => {
   });
 
   const onSubmit = async (data: PropertyFormData) => {
+    setloading(true);
     if (!authUser?.userId) {
       throw new Error("No manager ID found");
     }
-
+    console.log("auth user is ",authUser);
+    console.log("form data is ",data);
     const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       if (key === "photoUrls") {
         const files = value as File[];
         files.forEach((file: File) => {
-          formData.append("photos", file);
+          formData.append("files", file); // Backend multer expects "files"
         });
       } else if (Array.isArray(value)) {
         formData.append(key, JSON.stringify(value));
@@ -59,10 +62,18 @@ const NewProperty = () => {
     });
 
     formData.append("managerAuthId", authUser.userId);
-
-    await createProperty(formData);
+    console.log("form data entries being sent:", Object.fromEntries(formData.entries()));
+    
+    try {
+      await createProperty(formData).unwrap();
+      // Optional: Redirect on success or clear form
+    } catch (error) {
+      console.error("Failed to create property:", error);
+    } finally {
+      setloading(false);
+    }
   };
-
+  if (loading) return <div>Loading....</div>
   return (
     <div className="dashboard-container">
       <Header
