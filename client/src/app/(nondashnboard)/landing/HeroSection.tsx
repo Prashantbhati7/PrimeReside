@@ -85,11 +85,11 @@ const HeroSection = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by city, neighborhood or address"
-              className="w-full max-w-lg placeholder:text-black rounded-none rounded-l-xl border-none bg-transparent h-12"
+              className="w-full max-w-lg placeholder:text-black rounded-none rounded-l-xl border-none active:backdrop-blur-none backdrop-blur-2xl ring-1 ring-amber-300 h-12"
             />
             <Button
               onClick={handleLocationSearch}
-              className="bg-secondary-500 bg-orange-500/80 rounded-none rounded-r-xl border-none hover:bg-secondary-600 h-12"
+              className="bg-secondary-500 border-none ring ring-amber-200 bg-orange-500/80 rounded-none rounded-r-xl shadow-md cursor-pointer hover:shadow-amber-400 h-12"
             >
               Search
             </Button>

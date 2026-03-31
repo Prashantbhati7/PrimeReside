@@ -83,7 +83,7 @@ const ApplicationModal = ({
               type="textarea"
               placeholder="Enter any additional information"
             />
-            <Button type="submit" className="bg-pink-600 text-white w-full hover:bg-pink-700">
+            <Button type="submit" className="bg-secondary-700 text-white w-full hover:bg-pink-700">
               Submit Application
             </Button>
           </form>

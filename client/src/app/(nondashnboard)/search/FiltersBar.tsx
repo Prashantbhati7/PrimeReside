@@ -111,8 +111,8 @@ const FiltersBar = () => {
         <Button
           variant="outline"
           className={cn(
-            "gap-2 rounded-xl border-pink-400 hover:bg-pink-500/80 hover:text-white",
-            isFiltersFullOpen && "bg-pink-600 text-white"
+            "gap-2 rounded-xl border-primary-400 hover:bg-primary-500/80 hover:text-white",
+            isFiltersFullOpen && "bg-secondary-700 text-white"
           )}
           onClick={() => dispatch(toggleFiltersFullOpen())}
         >
@@ -126,12 +126,12 @@ const FiltersBar = () => {
             placeholder="Search location"
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-40 rounded-l-xl rounded-r-none border-pink-400 border-r-0"
+            className="w-40 rounded-l-xl rounded-r-none border-primary-400 border-r-0"
           />
           <Button
             onClick={handleLocationSearch}
-            className={`rounded-r-xl rounded-l-none border-l-none border-pink-400 shadow-none 
-              border hover:bg-pink-600/80 hover:text-white`}
+            className={`rounded-r-xl rounded-l-none border-l-none border-primary-400 shadow-none 
+              border hover:bg-secondary-700/80 hover:text-white`}
           >
             <Search className="w-4 h-4" />
           </Button>
@@ -146,7 +146,7 @@ const FiltersBar = () => {
               handleFilterChange("priceRange", value, true)
             }
           >
-            <SelectTrigger className="w-22 rounded-xl border-pink-400">
+            <SelectTrigger className="w-22 rounded-xl border-primary-400">
               <SelectValue>
                 {formatPriceValue(filters.priceRange[0], true)}
               </SelectValue>
@@ -168,7 +168,7 @@ const FiltersBar = () => {
               handleFilterChange("priceRange", value, false)
             }
           >
-            <SelectTrigger className="w-22 rounded-xl border-pink-400">
+            <SelectTrigger className="w-22 rounded-xl border-primary-400">
               <SelectValue>
                 {formatPriceValue(filters.priceRange[1], false)}
               </SelectValue>
@@ -191,7 +191,7 @@ const FiltersBar = () => {
             value={filters.beds}
             onValueChange={(value) => handleFilterChange("beds", value, null)}
           >
-            <SelectTrigger className="w-26 rounded-xl border-pink-400">
+            <SelectTrigger className="w-26 rounded-xl border-primary-400">
               <SelectValue placeholder="Beds" />
             </SelectTrigger>
             <SelectContent className="bg-white">
@@ -227,7 +227,7 @@ const FiltersBar = () => {
             handleFilterChange("propertyType", value, null)
           }
         >
-          <SelectTrigger className="w-32 rounded-xl border-pink-400">
+          <SelectTrigger className="w-32 rounded-xl border-primary-400">
             <SelectValue placeholder="Home Type" />
           </SelectTrigger>
           <SelectContent className="bg-white">

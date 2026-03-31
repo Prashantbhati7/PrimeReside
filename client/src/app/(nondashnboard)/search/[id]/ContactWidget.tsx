@@ -17,21 +17,21 @@ const ContactWidget = ({ onOpenModal }: ContactWidgetProps) => {
   };
 
   return (
-    <div className="bg-white border border-pink-200 rounded-2xl p-7 h-fit min-w-[300px]">
+    <div className="bg-white border border-primary-200 rounded-2xl p-7 h-fit min-w-[300px]">
       {/* Contact Property */}
-      <div className="flex items-center gap-5 mb-4 border border-pink-200 p-4 rounded-xl">
-        <div className="flex items-center p-4 bg-pink-900 rounded-full">
-          <Phone className="text-pink-50" size={15} />
+      <div className="flex items-center gap-5 mb-4 border border-primary-200 p-4 rounded-xl">
+        <div className="flex items-center p-4 bg-secondary-900 rounded-full">
+          <Phone className="text-primary-50" size={15} />
         </div>
         <div>
           <p>Contact This Property</p>
-          <div className="text-lg font-bold text-pink-800">
+          <div className="text-lg font-bold text-secondary-800">
             (424) 340-5574
           </div>
         </div>
       </div>
       <Button
-        className="w-full bg-pink-600/80 text-white hover:bg-pink-500/80"
+        className="w-full bg-secondary-700/80 text-white hover:bg-primary-500/80"
         onClick={handleButtonClick}
       >
         {authUser ? "Submit Application" : "Sign In to Apply"}
@@ -39,8 +39,8 @@ const ContactWidget = ({ onOpenModal }: ContactWidgetProps) => {
 
       <hr className="my-4" />
       <div className="text-sm">
-        <div className="text-pink-600 mb-1">Language: English, Bahasa.</div>
-        <div className="text-pink-600">
+        <div className="text-secondary-600 mb-1">Language: English, Bahasa.</div>
+        <div className="text-secondary-600">
           Open by appointment on Monday - Sunday
         </div>
       </div>

@@ -46,7 +46,7 @@ const CardCompact = ({
               {propertyLink ? (
                 <Link
                   href={propertyLink}
-                  className="hover:underline hover:text-pink-600"
+                  className="hover:underline hover:text-secondary-600"
                   scroll={false}
                 >
                   {property.name}

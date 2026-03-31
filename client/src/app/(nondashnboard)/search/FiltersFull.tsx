@@ -121,7 +121,7 @@ const FiltersFull = () => {
             />
             <Button
               onClick={handleLocationSearch}
-              className="rounded-r-xl rounded-l-none border-l-none border-black shadow-none border hover:bg-pink-600/80 hover:text-white"
+              className="rounded-r-xl rounded-l-none border-l-none border-black shadow-none border hover:bg-secondary-700/80 hover:text-white"
             >
               <Search className="w-4 h-4" />
             </Button>
@@ -239,7 +239,7 @@ const FiltersFull = () => {
                 squareFeet: value as [number, number],
               }))
             }
-            className="[&>.bar]:bg-pink-600/80"
+            className="[&>.bar]:bg-secondary-700/80"
           />
           <div className="flex justify-between mt-2">
             <span>{localFilters.squareFeet[0] ?? 0} sq ft</span>
@@ -295,7 +295,7 @@ const FiltersFull = () => {
         <div className="flex gap-4 mt-6">
           <Button
             onClick={handleSubmit}
-            className="flex-1 bg-pink-400/80 text-white rounded-xl"
+            className="flex-1 bg-primary-600/80 text-white rounded-xl"
           >
             APPLY
           </Button>

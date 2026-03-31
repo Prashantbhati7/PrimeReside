@@ -64,7 +64,7 @@ const Map = () => {
               ]}
             >
               <Popup>
-                <div className="flex justify-between items-center gap-3 bg-pink-400/80 text-white p-2 rounded-lg">
+                <div className="flex justify-between items-center gap-3 bg-primary-600/80 text-white p-2 rounded-lg">
                   <div className="flex flex-col gap-1">
                     <Link 
                       href={`/search/${property.id}`} 

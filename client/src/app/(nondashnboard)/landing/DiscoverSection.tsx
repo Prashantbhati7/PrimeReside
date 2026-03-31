@@ -33,7 +33,7 @@ const DiscoverSection = () => {
           <h2 className="text-4xl   leading-tight text-white font-bold">
             Discover
           </h2>
-          <p className="mt-4 text-lg text-pink-400">
+          <p className="mt-4 text-lg text-primary-400">
             Find your Dream Rental Property Today!
           </p>
           <p className="mt-2 text-white max-w-3xl mx-auto">
