@@ -27,7 +27,7 @@ const Residences = () => {
     skip: !authUser?.userId,
   });
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <div className="h-screen w-full flex items-center justify-center"> <Loading/> </div>
   if (error) return <div>Error loading current residences</div>;
 
   return (

@@ -16,7 +16,7 @@ const Properties = () => {
     skip: !authUser?.userId,
   });
 
-  if (isLoading) return <Loading />;
+  if (isLoading) return <div className=""><Loading/></div>
   if (error) return <div>Error loading manager properties</div>;
 
   return (

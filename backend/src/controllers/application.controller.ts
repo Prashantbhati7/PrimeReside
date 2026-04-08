@@ -27,25 +27,11 @@ export const createApplication = AsyncHandler(async(req:AuthenticatedRequest,res
         throw new ApiError(404, "Property not found");
     }
 
-    // 2. Run Atomic Transaction using CTE
+    // 2. Insert Application directly using CTE to fetch property details
     const result = await sql`
-        WITH inserted_lease AS (
-            INSERT INTO "Lease" (
-                "startDate", "endDate", "rent", "deposit", "propertyId", "tenantAuthId"
-            )
-            VALUES (
-                CURRENT_TIMESTAMP, 
-                CURRENT_TIMESTAMP + interval '1 year', 
-                ${property.pricePerMonth}, 
-                ${property.securityDeposit}, 
-                ${propertyId}, 
-                ${tenantAuthId}
-            )
-            RETURNING *
-        ),
-        inserted_app AS (
+        WITH inserted_app AS (
             INSERT INTO "Application" (
-                "applicationDate", "status", "name", "email", "phoneNumber", "message", "propertyId", "tenantAuthId", "leaseId"
+                "applicationDate", "status", "name", "email", "phoneNumber", "message", "propertyId", "tenantAuthId"
             )
             VALUES (
                 ${applicationDate}, 
@@ -55,24 +41,26 @@ export const createApplication = AsyncHandler(async(req:AuthenticatedRequest,res
                 ${phoneNumber}, 
                 ${message}, 
                 ${propertyId}, 
-                ${tenantAuthId}, 
-                (SELECT id FROM inserted_lease)
+                ${tenantAuthId}
             )
             RETURNING *
         )
         SELECT 
             a.*,
+            NULL as lease,
             json_build_object(
-                'id', l.id, 
-                'startDate', l."startDate", 
-                'endDate', l."endDate", 
-                'rent', l.rent, 
-                'deposit', l.deposit
-            ) as lease,
-            json_build_object(
-                'id', p.id, 
-                'name', p.name, 
-                'pricePerMonth', p."pricePerMonth"
+                'id', p.id,
+                'name', p.name,
+                'pricePerMonth', p."pricePerMonth",
+                'beds', p.beds,
+                'baths', p.baths,
+                'squareFeet', p."squareFeet",
+                'propertyType', p."propertyType",
+                'photoUrls', p."photoUrls",
+                'address', loc.address,
+                'city', loc.city,
+                'state', loc.state,
+                'country', loc.country
             ) as property,
             json_build_object(
                 'id', t.id, 
@@ -81,8 +69,8 @@ export const createApplication = AsyncHandler(async(req:AuthenticatedRequest,res
                 'email', t.email
             ) as tenant
         FROM inserted_app a
-        JOIN inserted_lease l ON a."leaseId" = l.id
         JOIN "Property" p ON a."propertyId" = p.id
+        JOIN "Location" loc ON p."locationId" = loc.id
         JOIN "Tenant" t ON a."tenantAuthId" = t."authId"
     `;
 
@@ -102,22 +90,80 @@ export const listApplication = AsyncHandler(async(req:AuthenticatedRequest,res:R
         query = sql`
             SELECT 
                 a.*,
-                json_build_object('id', p.id, 'name', p.name, 'pricePerMonth', p."pricePerMonth") as property,
-                json_build_object('id', t.id, 'authId', t."authId", 'name', t.name) as tenant
+                json_build_object(
+                    'id', p.id,
+                    'name', p.name,
+                    'pricePerMonth', p."pricePerMonth",
+                    'beds', p.beds,
+                    'baths', p.baths,
+                    'squareFeet', p."squareFeet",
+                    'propertyType', p."propertyType",
+                    'photoUrls', p."photoUrls",
+                    'address', loc.address,
+                    'city', loc.city,
+                    'state', loc.state,
+                    'country', loc.country
+                ) as property,
+                json_build_object(
+                    'id', t.id,
+                    'authId', t."authId",
+                    'name', t.name,
+                    'email', t.email,
+                    'phoneNumber', t."phoneNumber"
+                ) as tenant,
+                CASE WHEN l.id IS NOT NULL THEN
+                    json_build_object(
+                        'id', l.id,
+                        'startDate', l."startDate",
+                        'endDate', l."endDate",
+                        'rent', l.rent
+                    )
+                ELSE NULL END as lease
             FROM "Application" a
             JOIN "Property" p ON a."propertyId" = p.id
+            JOIN "Location" loc ON p."locationId" = loc.id
             JOIN "Tenant" t ON a."tenantAuthId" = t."authId"
+            LEFT JOIN "Lease" l ON a."leaseId" = l.id
             WHERE p."managerAuthId" = ${userAuthId}
         `;
     } else {
         query = sql`
             SELECT 
                 a.*,
-                json_build_object('id', p.id, 'name', p.name, 'pricePerMonth', p."pricePerMonth") as property,
-                json_build_object('id', t.id, 'authId', t."authId", 'name', t.name) as tenant
+                json_build_object(
+                    'id', p.id,
+                    'name', p.name,
+                    'pricePerMonth', p."pricePerMonth",
+                    'beds', p.beds,
+                    'baths', p.baths,
+                    'squareFeet', p."squareFeet",
+                    'propertyType', p."propertyType",
+                    'photoUrls', p."photoUrls",
+                    'address', loc.address,
+                    'city', loc.city,
+                    'state', loc.state,
+                    'country', loc.country
+                ) as property,
+                json_build_object(
+                    'id', m.id,
+                    'authId', m."authId",
+                    'name', m.name,
+                    'email', m.email,
+                    'phoneNumber', m."phoneNumber"
+                ) as manager,
+                CASE WHEN l.id IS NOT NULL THEN
+                    json_build_object(
+                        'id', l.id,
+                        'startDate', l."startDate",
+                        'endDate', l."endDate",
+                        'rent', l.rent
+                    )
+                ELSE NULL END as lease
             FROM "Application" a
             JOIN "Property" p ON a."propertyId" = p.id
-            JOIN "Tenant" t ON a."tenantAuthId" = t."authId"
+            JOIN "Location" loc ON p."locationId" = loc.id
+            JOIN "Manager" m ON p."managerAuthId" = m."authId"
+            LEFT JOIN "Lease" l ON a."leaseId" = l.id
             WHERE a."tenantAuthId" = ${userAuthId}
         `;
     }
@@ -182,9 +228,18 @@ export const updateApplicationStatus = AsyncHandler(async(req:AuthenticatedReque
                     'deposit', l.deposit
                 ) as lease,
                 json_build_object(
-                    'id', p.id, 
-                    'name', p.name, 
-                    'pricePerMonth', p."pricePerMonth"
+                    'id', p.id,
+                    'name', p.name,
+                    'pricePerMonth', p."pricePerMonth",
+                    'beds', p.beds,
+                    'baths', p.baths,
+                    'squareFeet', p."squareFeet",
+                    'propertyType', p."propertyType",
+                    'photoUrls', p."photoUrls",
+                    'address', loc.address,
+                    'city', loc.city,
+                    'state', loc.state,
+                    'country', loc.country
                 ) as property,
                 json_build_object(
                     'id', t.id, 
@@ -194,6 +249,7 @@ export const updateApplicationStatus = AsyncHandler(async(req:AuthenticatedReque
             FROM update_app a
             JOIN "Lease" l ON a."leaseId" = l.id
             JOIN "Property" p ON a."propertyId" = p.id
+            JOIN "Location" loc ON p."locationId" = loc.id
             JOIN "Tenant" t ON a."tenantAuthId" = t."authId"
         `;
     } else {
@@ -211,4 +267,18 @@ export const updateApplicationStatus = AsyncHandler(async(req:AuthenticatedReque
     }
 
     return res.status(200).json(updatedResult[0]);
+})
+
+
+
+export const getApplicationByPropertyId = AsyncHandler(async(req:AuthenticatedRequest,res)=>{
+    const {propertyId} = req.params;
+    const authId = req.user?.id;
+    if(!authId){
+        throw new ApiError(401,"Unauthorized")
+    }
+    const applications = await sql`
+        SELECT * FROM "Application" WHERE "propertyId" = ${Number(propertyId)} AND "tenantAuthId" = ${authId}
+    `
+    return res.status(200).json(applications);
 })

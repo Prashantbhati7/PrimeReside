@@ -10,7 +10,7 @@ import { Form } from "@/components/ui/form";
 import { ApplicationFormData, applicationSchema } from "@/lib/schemas";
 import { useCreateApplicationMutation, useGetAuthUserQuery } from "@/state/api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const ApplicationModal = ({
@@ -18,6 +18,7 @@ const ApplicationModal = ({
   onClose,
   propertyId,
 }: ApplicationModalProps) => {
+  const [btnLoading,setBtnLoading] = useState(false);
   const [createApplication] = useCreateApplicationMutation();
   const { data: authUser } = useGetAuthUserQuery();
 
@@ -32,7 +33,7 @@ const ApplicationModal = ({
   });
 
   const onSubmit = async (data: ApplicationFormData) => {
-    console.log("auht user is ",authUser);
+    setBtnLoading(true);
     if (!authUser || authUser.userRole !== "tenant") {
       console.error(
         "You must be logged in as a tenant to submit an application"
@@ -48,6 +49,7 @@ const ApplicationModal = ({
       tenantAuthId: authUser.userId,
     });
     console.log("application created ",application);
+    setBtnLoading(false);
     onClose();
   };
 
@@ -83,8 +85,8 @@ const ApplicationModal = ({
               type="textarea"
               placeholder="Enter any additional information"
             />
-            <Button type="submit" className="bg-secondary-700 text-white w-full hover:bg-pink-700">
-              Submit Application
+            <Button type="submit"  disabled={btnLoading} className="bg-amber-500 text-white w-full cursor-pointer hover:bg-amber-600">
+              {btnLoading ? "Submitting..." : "Submit Application"}
             </Button>
           </form>
         </Form>

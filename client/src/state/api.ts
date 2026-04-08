@@ -348,7 +348,15 @@ export const api = createApi({
         });
       },
     }),
-
+    getApplicationByPropertyId: build.query<Application[], number>({
+      query: (propertyId) => `applications/${propertyId}`,
+      providesTags: ["Applications"],
+      async onQueryStarted(_, { queryFulfilled }) {
+        await withToast(queryFulfilled, {
+          error: "Failed to fetch applications.",
+        });
+      },
+    }),
     updateApplicationStatus: build.mutation<
       Application & { lease?: Lease },
       { id: number; status: string }
@@ -401,6 +409,7 @@ export const {
   useGetPropertyLeasesQuery,
   useGetPaymentsQuery,
   useGetApplicationsQuery,
+  useGetApplicationByPropertyIdQuery,
   useUpdateApplicationStatusMutation,
   useCreateApplicationMutation,
   useLoginMutation,

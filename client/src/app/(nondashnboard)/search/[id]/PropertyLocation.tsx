@@ -6,6 +6,7 @@ import React from "react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import Loading from "@/components/Loading";
 
 // Fix for Leaflet marker icons
 // @ts-expect-error: Leaflet icon prototype manipulation is needed for React compatibility
@@ -23,7 +24,7 @@ const PropertyLocation = ({ propertyId }: { propertyId: number }) => {
     isLoading,
   } = useGetPropertyQuery(propertyId);
 
-  if (isLoading) return <>Loading...</>;
+  if (isLoading) return <div className="h-full w-full flex items-center justify-center"> <Loading/> </div>
   if (isError || !property) {
     return <>Property not Found</>;
   }

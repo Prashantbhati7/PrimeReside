@@ -16,7 +16,6 @@ const ApplicationCard = ({
   const [imgSrc, setImgSrc] = useState(
     application.property.photoUrls?.[0] || "/placeholder.jpg"
   );
-
   const statusColor =
     application.status === "Approved"
       ? "bg-green-500"
@@ -26,9 +25,8 @@ const ApplicationCard = ({
 
   const contactPerson =
     userType === "manager" ? application.tenant : application.manager;
-
   return (
-    <div className="border rounded-xl overflow-hidden shadow-sm bg-white mb-4">
+    <div className="border rounded-xl w-full overflow-hidden shadow-sm bg-white mb-4">
       <div className="flex flex-col lg:flex-row  items-start lg:items-center justify-between px-6 md:px-4 py-6 gap-6 lg:gap-4">
         {/* Property Info Section */}
         <div className="flex flex-col lg:flex-row gap-5 w-full lg:w-auto">
@@ -48,7 +46,7 @@ const ApplicationCard = ({
               </h2>
               <div className="flex items-center mb-2">
                 <MapPin className="w-5 h-5 mr-1" />
-                <span>{`${application.property.location.city}, ${application.property.location.country}`}</span>
+                <span>{`${application.property.city}, ${application.property.country}`}</span>
               </div>
             </div>
             <div className="text-xl font-semibold">
@@ -83,8 +81,8 @@ const ApplicationCard = ({
             {new Date(application.lease?.endDate).toLocaleDateString()}
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-500">Next Payment:</span>{" "}
-            {new Date(application.lease?.nextPaymentDate).toLocaleDateString()}
+            <span className="text-gray-500">Rent:</span>{" "}
+            ${application.lease?.rent ?? "—"}
           </div>
         </div>
 
@@ -92,7 +90,7 @@ const ApplicationCard = ({
         <div className="hidden lg:block border-[0.5px] border-primary-200 h-48" />
 
         {/* Contact Person Section */}
-        <div className="flex flex-col justify-start gap-5 w-full lg:basis-3/12 lg:h-48 py-2">
+        { contactPerson && <div className="flex flex-col justify-start gap-5 w-full lg:basis-3/12 lg:h-48 py-2">
           <div>
             <div className="text-lg font-semibold">
               {userType === "manager" ? "Tenant" : "Manager"}
@@ -121,7 +119,7 @@ const ApplicationCard = ({
               </div>
             </div>
           </div>
-        </div>
+        </div>}
       </div>
 
       <hr className="my-4" />

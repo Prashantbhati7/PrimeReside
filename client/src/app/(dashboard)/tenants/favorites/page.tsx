@@ -8,9 +8,10 @@ import {
   useGetPropertiesQuery,
   useGetTenantQuery,
 } from "@/state/api";
-import React from "react";
+import React, { useState } from "react";
 
 const Favorites = () => {
+   
   const { data: authUser } = useGetAuthUserQuery();
   const { data: tenant } = useGetTenantQuery(
     authUser?.userId || "",
@@ -27,8 +28,8 @@ const Favorites = () => {
     { favoriteIds: tenant?.favorites?.map((fav: { id: number }) => fav.id) },
     { skip: !tenant?.favorites || tenant?.favorites.length === 0 }
   );
-
-  if (isLoading) return <Loading />;
+  
+  if (isLoading) return <div className="h-screen w-full flex items-center justify-center"> <Loading/> </div>
   if (error) return <div>Error loading favorites</div>;
 
   return (

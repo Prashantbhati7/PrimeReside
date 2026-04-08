@@ -27,10 +27,13 @@ const PropertyTenants = () => {
 
   const { data: property, isLoading: propertyLoading } =
     useGetPropertyQuery(propertyId);
+    console.log("property is ",property);
   const { data: leases, isLoading: leasesLoading } =
     useGetPropertyLeasesQuery(propertyId);
+    console.log("leases is ",leases);
   const { data: payments, isLoading: paymentsLoading } =
     useGetPaymentsQuery(propertyId);
+    console.log("payments is ",payments);
 
   if (propertyLoading || leasesLoading || paymentsLoading) return <Loading />;
 
@@ -100,18 +103,18 @@ const PropertyTenants = () => {
                     <TableCell>
                       <div className="flex items-center space-x-3">
                         <Image
-                          src="/landing-i1.png"
-                          alt={lease.tenant.name}
+                          src={property?.photoUrls[0]}
+                          alt={property.name}
                           width={40}
                           height={40}
                           className="rounded-full"
                         />
                         <div>
                           <div className="font-semibold">
-                            {lease.tenant.name}
+                            {lease.name}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {lease.tenant.email}
+                            {lease.email}
                           </div>
                         </div>
                       </div>
@@ -137,7 +140,7 @@ const PropertyTenants = () => {
                         {getCurrentMonthPaymentStatus(lease.id)}
                       </span>
                     </TableCell>
-                    <TableCell>{lease.tenant.phoneNumber}</TableCell>
+                    <TableCell>{lease.phoneNumber}</TableCell>
                     <TableCell>
                       <button
                         className={`border border-gray-300 text-gray-700 py-2 px-4 rounded-md flex 

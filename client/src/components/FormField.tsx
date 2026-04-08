@@ -23,7 +23,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Edit, X, Plus } from "lucide-react";
+import { Edit, X, Plus, Check, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { registerPlugin } from "filepond";
 import { FilePond } from "react-filepond";
 import "filepond/dist/filepond.min.css";
@@ -45,7 +51,9 @@ interface FormFieldProps {
     | "switch"
     | "password"
     | "file"
-    | "multi-input";
+    | "file"
+    | "multi-input"
+    | "multi-select";
   placeholder?: string;
   options?: { value: string; label: string }[];
   accept?: string;
@@ -160,6 +168,15 @@ export const CustomFormField: React.FC<FormFieldProps> = ({
             inputClassName={inputClassName}
           />
         );
+      case "multi-select":
+        return (
+          <MultiSelect
+            value={field.value || []}
+            onChange={field.onChange}
+            options={options || []}
+            placeholder={placeholder}
+          />
+        );
       default:
         return (
           <Input
@@ -267,5 +284,77 @@ const MultiInputField: React.FC<MultiInputFieldProps> = ({
         Add Item
       </Button>
     </div>
+  );
+};
+
+interface MultiSelectProps {
+  value: string[];
+  onChange: (value: string[]) => void;
+  options: { value: string; label: string }[];
+  placeholder?: string;
+}
+
+const MultiSelect: React.FC<MultiSelectProps> = ({
+  value,
+  onChange,
+  options,
+  placeholder,
+}) => {
+  const toggleOption = (optionValue: string) => {
+    const newValue = value.includes(optionValue)
+      ? value.filter((v) => v !== optionValue)
+      : [...value, optionValue];
+    onChange(newValue);
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="outline"
+          className="w-full justify-between text-left font-normal border-gray-200 min-h-12 h-auto py-2 px-4 shadow-none hover:bg-white"
+        >
+          <div className="flex flex-wrap gap-1">
+            {value.length > 0 ? (
+              value.map((val) => (
+                <span
+                  key={val}
+                  className="bg-primary-100 text-primary-700 px-2 py-0.5 rounded-md text-xs font-medium flex items-center gap-1"
+                >
+                  {options.find((o) => o.value === val)?.label || val}
+                  <X
+                    className="size-3 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleOption(val);
+                    }}
+                  />
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-500">{placeholder || "Select options"}</span>
+            )}
+          </div>
+          <ChevronDown className="h-4 w-4 opacity-50" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-[var(--radix-dropdown-menu-trigger-width)] max-h-60 overflow-y-auto">
+        {options.map((option) => (
+          <DropdownMenuItem
+            key={option.value}
+            onSelect={(e) => {
+              e.preventDefault();
+              toggleOption(option.value);
+            }}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            {option.label}
+            {value.includes(option.value) && (
+              <Check className="h-4 w-4 text-primary-700" />
+            )}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };

@@ -34,8 +34,14 @@ export interface Property {
   managerAuthId: string;
   averageRating: number;
   numberOfReviews: number;
+  // Nested relation (full property detail)
   location?: Location;
   manager?: Manager;
+  // Flat location fields returned by application queries
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
 }
 
 export interface Tenant {
@@ -84,8 +90,11 @@ export interface Application {
   phoneNumber: string;
   message?: string;
   status: "Pending" | "Approved" | "Denied";
+  applicationDate: string;
   createdAt: string;
-  property?: Property;
+  leaseId?: number;
+  lease?: Lease;
+  property: Property;
   tenant?: Tenant;
 }
 

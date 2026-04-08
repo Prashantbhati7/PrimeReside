@@ -22,6 +22,7 @@ const Navbar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { logout, user, userRole, isLoggingOut } = useAuth();
+   console.log("user is ",user);
   const isDashboardPage =
     pathname.includes("/managers") || pathname.includes("/tenants");
 
@@ -112,7 +113,7 @@ const Navbar = () => {
                     <Avatar>
                       <AvatarImage src={user.image} />
                       <AvatarFallback className="bg-pink-500">
-                        {userRole?.[0].toUpperCase()}
+                        {user?.name?.[0].toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <p className="text-pink-100 hidden md:block">{user.name}</p>

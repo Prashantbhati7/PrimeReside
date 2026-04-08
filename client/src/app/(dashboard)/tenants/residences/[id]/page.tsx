@@ -244,7 +244,7 @@ const Residence = () => {
     { skip: !leases?.[0]?.id }
   );
 
-  if (propertyLoading || leasesLoading || paymentsLoading) return <Loading />;
+  if (propertyLoading || leasesLoading || paymentsLoading) return <div className="h-screen w-full flex items-center justify-center"> <Loading/> </div>
   if (!property || propertyError) return <div>Error loading property</div>;
 
   const currentLease = leases?.find(

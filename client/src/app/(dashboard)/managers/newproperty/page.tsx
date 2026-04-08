@@ -10,6 +10,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
+import Loading from "@/components/Loading";
 
 const NewProperty = () => {
   const [createProperty] = useCreatePropertyMutation();
@@ -27,15 +28,16 @@ const NewProperty = () => {
       isPetsAllowed: true,
       isParkingIncluded: true,
       photoUrls: [],
-      amenities: "",
-      highlights: "",
+      amenities: [],
+      highlights: [],
       beds: 1,
       baths: 1,
       squareFeet: 1000,
+      propertyType: PropertyTypeEnum.Apartment,
       address: "",
       city: "",
       state: "",
-      country: "",
+      country: "India",
       postalCode: "",
     },
   });
@@ -54,6 +56,10 @@ const NewProperty = () => {
         files.forEach((file: File) => {
           formData.append("files", file); // Backend multer expects "files"
         });
+      } else if (key === "amenities" || key === "highlights") {
+        // Convert array to comma-separated string for backend compatibility
+        const values = value as string[];
+        formData.append(key, values.join(","));
       } else if (Array.isArray(value)) {
         formData.append(key, JSON.stringify(value));
       } else {
@@ -73,7 +79,7 @@ const NewProperty = () => {
       setloading(false);
     }
   };
-  if (loading) return <div>Loading....</div>
+  if (loading) return <div className="h-screen w-full flex items-center justify-center"> <Loading/> </div>
   return (
     <div className="dashboard-container">
       <Header
@@ -181,7 +187,7 @@ const NewProperty = () => {
                 <CustomFormField
                   name="amenities"
                   label="Amenities"
-                  type="select"
+                  type="multi-select"
                   options={Object.keys(AmenityEnum).map((amenity) => ({
                     value: amenity,
                     label: amenity,
@@ -190,7 +196,7 @@ const NewProperty = () => {
                 <CustomFormField
                   name="highlights"
                   label="Highlights"
-                  type="select"
+                  type="multi-select"
                   options={Object.keys(HighlightEnum).map((highlight) => ({
                     value: highlight,
                     label: highlight,
@@ -238,7 +244,8 @@ const NewProperty = () => {
 
             <Button
               type="submit"
-              className="bg-primary-700 text-white w-full mt-8"
+              className="bg-primary-700 cursor-pointer text-white w-full mt-8"
+              disabled={loading}
             >
               Create Property
             </Button>

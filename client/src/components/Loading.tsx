@@ -1,11 +1,17 @@
 import { Loader2 } from "lucide-react";
 import React from "react";
+import { Ripples } from 'ldrs/react'
+import 'ldrs/react/Ripples.css'
+
 
 const Loading = () => {
   return (
-    <div className="fixed inset-0 flex gap-2 items-center justify-center bg-background/50">
-      <Loader2 className="w-6 h-6 animate-spin text-primary-700" />
-      <span className="text-sm font-medium text-primary-700">Loading...</span>
+    <div className="flex gap-2 h-full w-full items-center justify-center ">
+      <Ripples
+        size="50"
+        speed="3"
+        color="#000000"
+      />
     </div>
   );
 };
