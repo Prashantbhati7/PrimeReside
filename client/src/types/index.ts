@@ -104,6 +104,7 @@ export interface CardProps {
   onFavoriteToggle: () => void;
   showFavoriteButton?: boolean;
   propertyLink?: string;
+  loading?: boolean;
 }
 
 export interface CardCompactProps {
@@ -112,4 +113,5 @@ export interface CardCompactProps {
   onFavoriteToggle: () => void;
   showFavoriteButton?: boolean;
   propertyLink?: string;
+  loading?: boolean;
 }

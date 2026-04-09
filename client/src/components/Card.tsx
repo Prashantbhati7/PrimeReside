@@ -10,6 +10,7 @@ const Card = ({
   onFavoriteToggle,
   showFavoriteButton = true,
   propertyLink,
+  loading,
 }: CardProps) => {
   const [imgSrc, setImgSrc] = useState(
     property.photoUrls?.[0] || "/placeholder.jpg"
@@ -40,7 +41,7 @@ const Card = ({
             </span>
           )}
         </div>
-        {showFavoriteButton && (
+        {!loading && showFavoriteButton && (
           <button
             className="absolute bottom-4 right-4 bg-white hover:bg-white/90 rounded-full p-2 cursor-pointer"
             onClick={onFavoriteToggle}

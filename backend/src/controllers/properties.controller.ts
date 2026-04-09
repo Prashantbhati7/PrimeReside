@@ -147,7 +147,7 @@ export const getProperties = async (req: Request, res: Response) => {
       JOIN "Location" l ON p."locationId" = l.id
       ${whereClause}
     `;
-    const propertiesResult = await sql.query(queryText, params);
+    const propertiesResult = await sql.unsafe(queryText, params);
     
     const properties = propertiesResult.map((p: any) => ({
       ...p,
@@ -181,7 +181,7 @@ export const getPropertyById = AsyncHandler(async (req: Request, res: Response) 
       WHERE p.id = $1
     `;
 
-    const propertyResult = await sql.query(queryText, [Number(id)]);
+    const propertyResult = await sql.unsafe(queryText, [Number(id)]);
 
     if (!propertyResult || propertyResult.length === 0) {
         throw new ApiError(404, "Property not found");
@@ -211,7 +211,7 @@ export const createProperty = AsyncHandler(async (req: Request, res: Response) =
     } = req.body;
    console.log("req body is ",req.body);
    console.log("files is ",files);
-    // 🟢 Upload photos
+     
     const photoUrls = await Promise.all(
       files.map(async (file) => {
         return new Promise<string>((resolve, reject) => {
@@ -259,7 +259,7 @@ export const createProperty = AsyncHandler(async (req: Request, res: Response) =
       RETURNING id, address, city, state, country, "postalCode", ST_AsText(coordinates) as coordinates;
     `;
     const locationParams = [address, city, state, country, postalCode, longitude, latitude];
-    const locationResult = await sql.query(insertLocationQuery, locationParams);
+    const locationResult = await sql.unsafe(insertLocationQuery, locationParams);
     const locationId = locationResult[0].id;
 
     // 🟢 Create Property securely
@@ -299,7 +299,7 @@ export const createProperty = AsyncHandler(async (req: Request, res: Response) =
         managerAuthId
     ];
     
-    const propertyResult = await sql.query(insertPropertyQuery, propertyParams);
+    const propertyResult = await sql.unsafe(insertPropertyQuery, propertyParams);
     
     return res.status(201).json({
       ...propertyResult[0],

@@ -73,6 +73,9 @@ export const createTenant = AsyncHandler(async(req:Request,res:Response)=>{
 
 export const updateTenant = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
     const authId = req.user?.id;
+    if (!authId) {
+        throw new ApiError(401, "Unauthorized");
+    }
     const {name,email,phoneNumber} = req.body;
     if(!name || !email || !phoneNumber) throw new ApiError(400,"All fields are required");
     const UpdatedTenant = await sql`UPDATE "Tenant" SET name = ${name}, email = ${email}, "phoneNumber" = ${phoneNumber} WHERE "authId" = ${authId}`;
@@ -108,7 +111,7 @@ export const getCurrResidence = AsyncHandler(async(req:Request,res:Response)=>{
 })
 
 
-export const ToggleFavourite = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
+export const ToggleFavorite = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
     const authId = req.user?.id; 
     if(!authId) throw new ApiError(401, "Not Authenticated");
     const { propertyId } = req.params;
@@ -143,7 +146,7 @@ export const ToggleFavourite = AsyncHandler(async(req:AuthenticatedRequest,res:R
     }
 })
 
-export const removeFavourite = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
+export const removeFavorite = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
     const authId = req.user?.id;
     if(!authId) throw new ApiError(401, "Not Authenticated");
     const {propertyId} = req.params;

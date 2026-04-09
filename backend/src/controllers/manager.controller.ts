@@ -15,6 +15,9 @@ export const getManagerById = AsyncHandler(async(req:Request,res:Response)=>{
 })
 export const updatemanager = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
     const authId = req.user?.id;
+    if (!authId) {
+        throw new ApiError(401, "Unauthorized");
+    }
     const {name,email,phoneNumber} = req.body;
     if (!name || !email || !phoneNumber) {
         throw new ApiError(400,"All fields are required");

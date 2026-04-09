@@ -84,6 +84,10 @@ export const createApplication = AsyncHandler(async(req:AuthenticatedRequest,res
 export const listApplication = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
     const userAuthId = req.user?.id;
     const role = req.user?.role;
+    
+    if (!userAuthId) {
+        throw new ApiError(401, "Unauthorized");
+    }
 
     let query;
     if (role === 'manager') {

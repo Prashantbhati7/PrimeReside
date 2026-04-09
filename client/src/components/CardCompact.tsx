@@ -10,6 +10,7 @@ const CardCompact = ({
   onFavoriteToggle,
   showFavoriteButton = true,
   propertyLink,
+  loading,
 }: CardCompactProps) => {
   const [imgSrc, setImgSrc] = useState(
     property.photoUrls?.[0] || "/placeholder.jpg"
@@ -55,7 +56,7 @@ const CardCompact = ({
                 property.name
               )}
             </h2>
-            {showFavoriteButton && (
+            {!loading && showFavoriteButton && (
               <button
                 className="bg-white rounded-full p-1"
                 onClick={onFavoriteToggle}

@@ -155,7 +155,7 @@ export const api = createApi({
     // tenant related endpoints
     getTenant: build.query<Tenant, string>({
       query: (authId) => `tenants/${authId}`,
-      providesTags: (result) => [{ type: "Tenants", id: result?.id }],
+      providesTags: (result, error, authId) => [{ type: "Tenants", id: authId }],
       async onQueryStarted(_, { queryFulfilled }) {
         await withToast(queryFulfilled, {
           error: "Failed to load tenant profile.",
@@ -190,7 +190,7 @@ export const api = createApi({
       }),
       transformResponse: (response: { UpdatedTenant: Tenant }) =>
         response.UpdatedTenant,
-      invalidatesTags: (result) => [{ type: "Tenants", id: result?.id }],
+      invalidatesTags: (result, error, { authId }) => [{ type: "Tenants", id: authId }],
       async onQueryStarted(_, { queryFulfilled }) {
         await withToast(queryFulfilled, {
           success: "Settings updated successfully!",

@@ -7,14 +7,16 @@ import {
 } from "@/state/api";
 import { useAppSelector } from "@/state/redux";
 import { Property } from "@/types";
-import React from "react";
+import React, { useState } from "react";
 
 import CardCompact from "@/components/CardCompact";
 import Card from "@/components/Card";
 import Loading from "@/components/Loading";
+import { toast } from "sonner";
 
 const Listings = () => {
   const { data: authUser } = useGetAuthUserQuery();
+  const [loading,setLoading] = useState(false);
   const { data: tenant } = useGetTenantQuery(
     authUser?.userId || "",
     {
@@ -27,30 +29,40 @@ const Listings = () => {
   const filters = useAppSelector((state) => state.global.filters);
  const response = useGetPropertiesQuery(filters);
   console.log("response is ",response);
+  console.log("tenant is ",tenant);
   const {
     data: properties,
     isLoading,
     isError,
   } = useGetPropertiesQuery(filters);
-  console.log("properties is ",properties);
-  console.log("tenant is ",tenant);
+  
   const handleFavoriteToggle = async (propertyId: number) => {
-    if (!authUser) return;
-
-    const isFavorite = tenant?.favorites?.some(
-      (fav: Property) => fav.id === propertyId
-    );
-
-    if (isFavorite) {
-      await removeFavorite({
-        authId: authUser.userId,
-        propertyId,
-      });
-    } else {
-      await addFavorite({
-        authId: authUser.userId,
-        propertyId,
-      });
+    try{
+      setLoading(true);
+      if (!authUser) {
+         toast.error("Please Login first to add favorites");
+      }
+      console.log("tenant is ",tenant);
+      const isFavorite = tenant?.favorites?.some(
+        (fav: Property) => fav.id === propertyId
+      );
+      console.log("is favorite ",isFavorite);
+      if (isFavorite) {
+        await removeFavorite({
+          authId: authUser.userId,
+          propertyId,
+        });
+      } else {
+        await addFavorite({
+          authId: authUser.userId,
+          propertyId,
+        });
+      } 
+    }
+    catch(err){
+      console.log(err);
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -80,6 +92,7 @@ const Listings = () => {
                 onFavoriteToggle={() => handleFavoriteToggle(property.id)}
                 showFavoriteButton={!!authUser}
                 propertyLink={`/search/${property.id}`}
+                loading = {loading}
               />
             ) : (
               <CardCompact
@@ -93,6 +106,7 @@ const Listings = () => {
                 onFavoriteToggle={() => handleFavoriteToggle(property.id)}
                 showFavoriteButton={!!authUser}
                 propertyLink={`/search/${property.id}`}
+                loading={loading}
               />
             )
           )}

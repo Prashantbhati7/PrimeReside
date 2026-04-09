@@ -1,10 +1,17 @@
-import { neon } from '@neondatabase/serverless';
+import postgres from 'postgres';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log("db url is ", process.env.DATABASE_URL);
-const sql = neon(process.env.DATABASE_URL as string);
-console.log("sql instance is ", sql);
+console.log("Connecting to local database gisdb...");
+
+// Configure for your local PostgreSQL instance
+const sql = postgres({
+  host: 'localhost',
+  port: 5432,
+  database: 'gisdb',
+  username: 'prashant',
+  password: process.env.DB_PASS,
+});
 
 export { sql };

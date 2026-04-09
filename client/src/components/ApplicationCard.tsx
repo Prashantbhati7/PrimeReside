@@ -1,4 +1,4 @@
-import { Mail, MapPin, PhoneCall } from "lucide-react";
+import { Mail, MapPin, PhoneCall, User } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 
@@ -99,13 +99,7 @@ const ApplicationCard = ({
           </div>
           <div className="flex gap-4">
             <div>
-              <Image
-                src="/landing-i1.png"
-                alt={contactPerson.name}
-                width={40}
-                height={40}
-                className="rounded-full mr-2 min-w-[40px] min-h-[40px]"
-              />
+               <div className="rounded-full font-bold w-10 h-10  flex items-center justify-center bg-blue-400 text-black">{contactPerson.name.charAt(0).toUpperCase()}</div>
             </div>
             <div className="flex flex-col gap-2">
               <div className="font-semibold">{contactPerson.name}</div>
