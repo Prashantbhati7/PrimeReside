@@ -1,10 +1,8 @@
-import { Response } from "express";
 import { sql } from "../lib/db.js";
-import { AuthenticatedRequest } from "../middlewares/auth.middleware.js";
 import AsyncHandler from "../utils/asyncHandler.js";
 
-export const getLease = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
-    const leases = await sql`
+export const getLease = AsyncHandler(async (req, res) => {
+  const leases = await sql`
         SELECT 
             l.*,
             json_build_object(
@@ -24,11 +22,11 @@ export const getLease = AsyncHandler(async(req:AuthenticatedRequest,res:Response
         JOIN "Tenant" t ON l."tenantAuthId" = t."authId"
         JOIN "Property" p ON l."propertyId" = p.id
     `;
-    return res.status(200).json(leases);
-})
+  return res.status(200).json(leases);
+});
 
-export const getLeasePayment = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
-    const leaseId = req.params.id;
-    const payments = await sql`SELECT * FROM "Payment" WHERE "leaseId" = ${leaseId}`;
-    return res.status(200).json(payments);
-})
+export const getLeasePayment = AsyncHandler(async (req, res) => {
+  const leaseId = req.params.id;
+  const payments = await sql`SELECT * FROM "Payment" WHERE "leaseId" = ${leaseId}`;
+  return res.status(200).json(payments);
+});

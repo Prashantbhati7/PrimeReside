@@ -2,7 +2,39 @@
 
 PrimeReside is a full-stack web application designed to facilitate secure and efficient interactions between property managers and tenants through an integrated digital platform.
 
+
 ---
+
+## 📂 Project Structure
+
+```text
+Primereside/
+├── backend/                # Express server & API logic
+│   ├── src/
+│   │   ├── controllers/    # Request handlers
+│   │   ├── lib/            # Shared utilities & database client
+│   │   ├── middlewares/    # Custom Express middlewares
+│   │   ├── routes/         # API endpoint definitions
+│   │   ├── utils/          # Helper functions
+│   │   └── index.js        # Server entry point
+│   ├── migrate-db.js       # Database migration script
+│   └── package.json
+├── client/                 # Next.js frontend application
+│   ├── src/
+│   │   ├── app/            # Next.js App Router (pages & layouts)
+│   │   ├── components/     # Reusable UI components
+│   │   ├── hooks/          # Custom React hooks
+│   │   ├── lib/            # Frontend utility functions
+│   │   ├── state/          # Redux Toolkit store & slices
+│   │   └── types/          # TypeScript interface definitions
+│   ├── public/             # Static assets (images, icons)
+│   ├── next.config.ts      # Next.js configuration
+│   └── package.json
+└── README.md               # Project documentation
+```
+
+---
+
 
 ## 🏗 Technical Architecture
 
@@ -24,27 +56,55 @@ The frontend is architected using **Next.js 14** (App Router) to leverage server
 
 ---
 
-## 🚀 Deployment and Execution
+## 🏃 How to Run the Project
 
-### **Environment Configuration**
-The system requires environment variables to be defined in `.env` files within both the `/client` and `/backend` directories. These include database connection parameters, authentication secrets, and third-party API configurations.
+Follow these steps to set up and run the project locally.
 
-### **Dependency Installation**
+### 1. Prerequisites
+- **Node.js**: v18.x or higher
+- **PostgreSQL**: With **PostGIS** extension enabled
+- **npm**: Package manager (included with Node.js)
+
+### 2. Environment Configuration
+The system requires environment variables to be defined in `.env` files within both the `/client` and `/backend` directories. 
+
+- **Backend (`/backend/.env`)**: Define `DATABASE_URL`, `JWT_SECRET`, `CLOUDINARY_URL`, etc.
+- **Client (`/client/.env`)**: Define `NEXT_PUBLIC_BASE_URL` for API communication.
+
+### 3. Dependency Installation
 Standardized package management is utilized via **npm**. Install required dependencies in both sub-directories:
+
 ```bash
 # Frontend dependencies
 cd client && npm install
 
 # Backend dependencies
-cd backend && npm install
+cd ../backend && npm install
 ```
 
-### **System Execution**
-To initiate the application in a development environment:
-- **Backend API**: Navigate to the `/backend` directory and execute `npm run dev`. This utilizes `nodemon` and `concurrently` for real-time compilation.
-- **Frontend Interface**: Navigate to the `/client` directory and execute `npm run dev` to start the execution of the Next.js development server.
+### 4. Database Setup
+Ensure your PostgreSQL instance is running and the PostGIS extension is installed. Run the migration script to set up the necessary tables:
+
+```bash
+cd backend && node migrate-db.js
+```
+
+### 5. System Execution
+To initiate the application in a development environment, you need to start both the backend and frontend servers.
+
+- **Backend API**:
+  ```bash
+  cd backend && npm run dev
+  ```
+- **Frontend Interface**:
+  ```bash
+  cd client && npm run dev
+  ```
+
+Once both are running, the application should be accessible at `http://localhost:3000`.
 
 ---
+
 
 ## 🔍 Core Functionalities
 
@@ -78,6 +138,4 @@ A comprehensive data-entry module for listing new inventory, supporting multi-fi
 
 ---
 
-## 🛠 Prerequisites & Asset Setup
-To maintain the visual integrity of this documentation, ensure that screenshots are persisted in the `/client/public/screenshots/` directory with the following naming convention:
-`hero.png`, `search.png`, `details.png`, `favorites.png`, `applications.png`, `manager-applications.png`, and `new-property.png`.
+

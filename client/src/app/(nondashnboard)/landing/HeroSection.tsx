@@ -89,6 +89,7 @@ const HeroSection = () => {
             />
             <Button
               onClick={handleLocationSearch}
+              onKeyDown={(e) => e.key === "Enter" && handleLocationSearch()}
               className="bg-secondary-500 border-none ring ring-amber-200 bg-orange-500/80 rounded-none rounded-r-xl shadow-md cursor-pointer hover:shadow-amber-400 h-12"
             >
               Search

@@ -1,34 +1,32 @@
-import { Response } from "express";
-import { AuthenticatedRequest } from "../middlewares/auth.middleware.js";
 import AsyncHandler from "../utils/asyncHandler.js";
 import { sql } from "../lib/db.js";
 import ApiError from "../utils/ApiError.js";
 
-export const createApplication = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
-    const {
-        applicationDate,
-        status,
-        propertyId,
-        tenantAuthId,
-        name,
-        email,
-        phoneNumber,
-        message
-    } = req.body;
+export const createApplication = AsyncHandler(async (req, res) => {
+  const {
+    applicationDate,
+    status,
+    propertyId,
+    tenantAuthId,
+    name,
+    email,
+    phoneNumber,
+    message,
+  } = req.body;
 
-    // 1. Fetch property to get rent and deposit
-    const [property] = await sql`
+   
+  const [property] = await sql`
         SELECT "pricePerMonth", "securityDeposit" 
         FROM "Property" 
         WHERE id = ${propertyId}
     `;
 
-    if (!property) {
-        throw new ApiError(404, "Property not found");
-    }
+  if (!property) {
+    throw new ApiError(404, "Property not found");
+  }
 
-    // 2. Insert Application directly using CTE to fetch property details
-    const result = await sql`
+  
+  const result = await sql`
         WITH inserted_app AS (
             INSERT INTO "Application" (
                 "applicationDate", "status", "name", "email", "phoneNumber", "message", "propertyId", "tenantAuthId"
@@ -74,24 +72,24 @@ export const createApplication = AsyncHandler(async(req:AuthenticatedRequest,res
         JOIN "Tenant" t ON a."tenantAuthId" = t."authId"
     `;
 
-    if (!result || result.length === 0) {
-        throw new ApiError(500, "Failed to create application");
-    }
+  if (!result || result.length === 0) {
+    throw new ApiError(500, "Failed to create application");
+  }
 
-    return res.status(201).json(result[0]);
-})
+  return res.status(201).json(result[0]);
+});
 
-export const listApplication = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
-    const userAuthId = req.user?.id;
-    const role = req.user?.role;
-    
-    if (!userAuthId) {
-        throw new ApiError(401, "Unauthorized");
-    }
+export const listApplication = AsyncHandler(async (req, res) => {
+  const userAuthId = req.user?.id;
+  const role = req.user?.role;
 
-    let query;
-    if (role === 'manager') {
-        query = sql`
+  if (!userAuthId) {
+    throw new ApiError(401, "Unauthorized");
+  }
+
+  let query;
+  if (role === "manager") {
+    query = sql`
             SELECT 
                 a.*,
                 json_build_object(
@@ -130,8 +128,8 @@ export const listApplication = AsyncHandler(async(req:AuthenticatedRequest,res:R
             LEFT JOIN "Lease" l ON a."leaseId" = l.id
             WHERE p."managerAuthId" = ${userAuthId}
         `;
-    } else {
-        query = sql`
+  } else {
+    query = sql`
             SELECT 
                 a.*,
                 json_build_object(
@@ -170,18 +168,18 @@ export const listApplication = AsyncHandler(async(req:AuthenticatedRequest,res:R
             LEFT JOIN "Lease" l ON a."leaseId" = l.id
             WHERE a."tenantAuthId" = ${userAuthId}
         `;
-    }
+  }
 
-    const applications = await query;
-    return res.status(200).json(applications);
-})
+  const applications = await query;
+  return res.status(200).json(applications);
+});
 
-export const updateApplicationStatus = AsyncHandler(async(req:AuthenticatedRequest,res:Response)=>{
-    const { id } = req.params;
-    const { status } = req.body;
+export const updateApplicationStatus = AsyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { status } = req.body;
 
-    // 1. Fetch current application details
-    const [application] = await sql`
+  // 1. Fetch current application details
+  const [application] = await sql`
         SELECT a.*, p."pricePerMonth", p."securityDeposit", t.id as "tenantIntId"
         FROM "Application" a
         JOIN "Property" p ON a."propertyId" = p.id
@@ -189,15 +187,14 @@ export const updateApplicationStatus = AsyncHandler(async(req:AuthenticatedReque
         WHERE a.id = ${Number(id)}
     `;
 
-    if (!application) {
-        throw new ApiError(404, "Application not found");
-    }
+  if (!application) {
+    throw new ApiError(404, "Application not found");
+  }
 
-    let updatedResult;
+  let updatedResult;
 
-    if (status === "Approved") {
-        // 2. Atomic approval process using CTE
-        updatedResult = await sql`
+  if (status === "Approved") {
+    updatedResult = await sql`
             WITH new_lease AS (
                 INSERT INTO "Lease" (
                     "startDate", "endDate", "rent", "deposit", "propertyId", "tenantAuthId"
@@ -256,33 +253,33 @@ export const updateApplicationStatus = AsyncHandler(async(req:AuthenticatedReque
             JOIN "Location" loc ON p."locationId" = loc.id
             JOIN "Tenant" t ON a."tenantAuthId" = t."authId"
         `;
-    } else {
-        // Simple status update (Denied / Pending)
-        updatedResult = await sql`
+  } else {
+    // Simple status update (Denied / Pending)
+    updatedResult = await sql`
             UPDATE "Application" 
             SET "status" = ${status} 
             WHERE id = ${Number(id)}
             RETURNING *
         `;
-    }
+  }
 
-    if (!updatedResult || updatedResult.length === 0) {
-        throw new ApiError(500, "Failed to update application status");
-    }
+  if (!updatedResult || updatedResult.length === 0) {
+    throw new ApiError(500, "Failed to update application status");
+  }
 
-    return res.status(200).json(updatedResult[0]);
-})
+  return res.status(200).json(updatedResult[0]);
+});
 
-
-
-export const getApplicationByPropertyId = AsyncHandler(async(req:AuthenticatedRequest,res)=>{
-    const {propertyId} = req.params;
-    const authId = req.user?.id;
-    if(!authId){
-        throw new ApiError(401,"Unauthorized")
-    }
-    const applications = await sql`
-        SELECT * FROM "Application" WHERE "propertyId" = ${Number(propertyId)} AND "tenantAuthId" = ${authId}
-    `
-    return res.status(200).json(applications);
-})
+export const getApplicationByPropertyId = AsyncHandler(async (req, res) => {
+  const { propertyId } = req.params;
+  const authId = req.user?.id;
+  if (!authId) {
+    throw new ApiError(401, "Unauthorized");
+  }
+  const applications = await sql`
+        SELECT * FROM "Application" WHERE "propertyId" = ${Number(
+          propertyId
+        )} AND "tenantAuthId" = ${authId}
+    `;
+  return res.status(200).json(applications);
+});

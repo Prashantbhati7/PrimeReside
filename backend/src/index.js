@@ -30,9 +30,9 @@ app.use('/api/v1/tenants',tenantRouter);
 app.use('/api/v1/managers',managerRouter);
 app.use('/api/v1/leases',leaseRouter);
 app.use('/api/v1/applications',applicationRouter);
-app.use((err:ApiError,req:express.Request,res:express.Response,next:express.NextFunction)=>{
-    return res.status(err.statusCode || 500).json({message:err.message})
-})
+app.use((err, req, res, next) => {
+  return res.status(err.statusCode || 500).json({ message: err.message });
+});
 
 
 app.listen(process.env.PORT, () => {
